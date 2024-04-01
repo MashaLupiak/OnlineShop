@@ -1,8 +1,21 @@
+using Microsoft.EntityFrameworkCore;
+using OnlineShop.Application.Services;
+using OnlineShop.Domain.Interfaces;
+using OnlineShop.Infrastructure.DataAccess;
+using OnlineShop.Infrastructure.Repositories;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 
 builder.Services.AddControllers();
+
+builder.Services.AddDbContext<OnlineShopDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("OnlineShopDb")));
+builder.Services.AddScoped<IProductService, ProductService>();
+
+builder.Services.AddScoped<IProductRepository, ProductRepository>();
+
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
