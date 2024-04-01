@@ -12,10 +12,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Controllers\" />
-  </ItemGroup>
-
-  <ItemGroup>
     <ProjectReference Include="..\OnlineShop.Application.Services\OnlineShop.Application.Services.csproj" />
     <ProjectReference Include="..\OnlineShop.Domain\OnlineShop.Domain.csproj" />
     <ProjectReference Include="..\OnlineShop.Infrastructure\OnlineShop.Infrastructure.csproj" />
