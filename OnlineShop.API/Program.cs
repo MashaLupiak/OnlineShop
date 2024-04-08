@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using OnlineShop.API.Middleware;
 using OnlineShop.Application.Services;
 using OnlineShop.Domain.Interfaces;
 using OnlineShop.Infrastructure.DataAccess;
@@ -28,6 +29,9 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+
+app.UseMiddleware<ExceptionHandlingMiddleware>();
 
 app.UseHttpsRedirection();
 

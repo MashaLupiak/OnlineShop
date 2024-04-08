@@ -21,43 +21,29 @@ namespace OnlineShop.API.Controllers
         [HttpPut]
         public async Task<IActionResult> AddOrUpdateProduct(Product product)
         {
-            try
+            product.ProductId = 0;
+            var result = await _productService.AddOrUpdateProduct(product);
+            if (result > 0)
             {
-                product.ProductId = 0;
-                var result = await _productService.AddOrUpdateProduct(product);
-                if (result > 0)
-                {
-                    return Ok(new { Message = "Product added/updated successfully.", ProductId = result });
-                }
-                else
-                {
-                    return BadRequest(new { Message = "Failed to add/update product." });
-                }
+                return Ok(new { Message = "Product added/updated successfully.", ProductId = result });
             }
-            catch (Exception ex)
+            else
             {
-                return StatusCode(500, new { Message = "Internal server error.", Error = ex.Message });
+                return BadRequest(new { Message = "Failed to add/update product." });
             }
         }
 
         [HttpGet("{productId}")]
         public async Task<IActionResult> GetProductDetails(int productId)
         {
-            try
+            var product = await _productService.GetProductDetails(productId);
+            if (product != null)
             {
-                var product = await _productService.GetProductDetails(productId);
-                if (product != null)
-                {
-                    return Ok(product);
-                }
-                else
-                {
-                    return NotFound(new { Message = "Product not found." });
-                }
+                return Ok(product);
             }
-            catch (Exception ex)
+            else
             {
-                return StatusCode(500, new { Message = "Internal server error.", Error = ex.Message });
+                return NotFound(new { Message = "Product not found." });
             }
         }
     }
