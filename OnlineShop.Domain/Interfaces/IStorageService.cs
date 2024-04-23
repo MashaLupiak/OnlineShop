@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace OnlineShop.Domain.Interfaces
 {
-    public interface ICacheService
+    public interface IStorageService
     {
         Task AddToCartAsync(int userId, CartItem cartItem);
         Task RemoveFromCartAsync(int userId, int productId);

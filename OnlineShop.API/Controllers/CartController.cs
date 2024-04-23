@@ -3,6 +3,7 @@ using OnlineShop.Application.Services;
 using OnlineShop.Domain.Entities;
 using OnlineShop.Domain.Interfaces;
 using OnlineShop.Infrastructure;
+using OnlineShop.Infrastructure.Cache;
 
 namespace OnlineShop.API.Controllers
 {
@@ -10,12 +11,12 @@ namespace OnlineShop.API.Controllers
     [Route("api/cart")]
     public class CartController : ControllerBase
     {
-        private readonly ICacheService _cacheService;
+        private readonly IStorageService _storageService;
         private readonly IProductService _productService;
 
-        public CartController(ICacheService cacheService, IProductService productService)
+        public CartController(IStorageService cacheService, IProductService productService)
         {
-            _cacheService = cacheService;
+            _storageService = cacheService;
             _productService = productService;
         }
 
@@ -31,7 +32,7 @@ namespace OnlineShop.API.Controllers
             {
                 return BadRequest(new { error = "Not enough quantity available." });
             }
-            await _cacheService.AddToCartAsync(userId, cartItem);
+            await _storageService.AddToCartAsync(userId, cartItem);
 
             product.Quantity -= cartItem.Quantity;
             await _productService.AddOrUpdateProductAsync(product);
@@ -42,7 +43,7 @@ namespace OnlineShop.API.Controllers
         [HttpDelete("{userId}/{productId}")]
         public async Task<IActionResult> RemoveFromCart(int userId, int productId)
         {
-            await _cacheService.RemoveFromCartAsync(userId, productId);
+            await _storageService.RemoveFromCartAsync(userId, productId);
             return Ok();
         }
 
@@ -50,7 +51,7 @@ namespace OnlineShop.API.Controllers
         [HttpGet("{userId}")]
         public async Task<IActionResult> GetCart(int userId)
         {
-            var cartItems = await _cacheService.GetCartAsync(userId);
+            var cartItems = await _storageService.GetCartAsync(userId);
             if (cartItems == null || !cartItems.Any())
             {
                 return NotFound(new { error = "Cart is empty for the specified user ID." });

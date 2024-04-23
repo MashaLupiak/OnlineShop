@@ -7,6 +7,8 @@ using OnlineShop.Infrastructure.DataAccess;
 using OnlineShop.Infrastructure.Repositories;
 using StackExchange.Redis;
 using OnlineShop.Infrastructure.Cache;
+using Newtonsoft.Json.Linq;
+using OnlineShop.Domain.Entities;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,7 +25,9 @@ builder.Services.AddSingleton<IConnectionMultiplexer>(sp =>
 
 builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
-builder.Services.AddScoped<ICacheService, RedisCacheService>();
+//builder.Services.AddScoped<ICacheService, RedisCacheService>();
+builder.Services.AddScoped<ICacheClient, RedisClient>();
+builder.Services.AddScoped<IStorageService, StorageService>();
 
 builder.Services.AddControllers();
 
