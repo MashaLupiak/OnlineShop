@@ -18,33 +18,29 @@ namespace OnlineShop.API.Controllers
             _productService = productService;
         }
 
+        [HttpGet]
+        public async Task<IActionResult> GetAllProducts()
+        {
+            var products = await _productService.GetAllProductsAsync();
+            return Ok(products);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetProductById(int id)
+        {
+            var product = await _productService.GetProductByIdAsync(id);
+            if (product == null)
+            {
+                return NotFound(new { error = "Product not found with the specified ID."});
+            }
+            return Ok(product);
+        }
+
         [HttpPut]
         public async Task<IActionResult> AddOrUpdateProduct(Product product)
         {
-            product.ProductId = 0;
-            var result = await _productService.AddOrUpdateProduct(product);
-            if (result > 0)
-            {
-                return Ok(new { Message = "Product added/updated successfully.", ProductId = result });
-            }
-            else
-            {
-                return BadRequest(new { Message = "Failed to add/update product." });
-            }
-        }
-
-        [HttpGet("{productId}")]
-        public async Task<IActionResult> GetProductDetails(int productId)
-        {
-            var product = await _productService.GetProductDetails(productId);
-            if (product != null)
-            {
-                return Ok(product);
-            }
-            else
-            {
-                return NotFound(new { Message = "Product not found." });
-            }
+            await _productService.AddOrUpdateProductAsync(product);
+            return Ok();
         }
     }
 }

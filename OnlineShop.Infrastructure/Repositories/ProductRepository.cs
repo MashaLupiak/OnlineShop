@@ -3,6 +3,7 @@ using OnlineShop.Domain.Entities;
 using OnlineShop.Domain.Interfaces;
 using OnlineShop.Infrastructure.DataAccess;
 using System.Threading.Tasks;
+using Microsoft.EntityFrameworkCore;
 
 namespace OnlineShop.Infrastructure.Repositories
 {
@@ -15,15 +16,29 @@ namespace OnlineShop.Infrastructure.Repositories
             _dbContext = dbContext;
         }
 
-        public async Task<int> AddOrUpdateProduct(Product product)
+        public async Task<IEnumerable<Product>> GetAllAsync()
         {
-            _dbContext.Products.Add(product);
-            return await _dbContext.SaveChangesAsync();
+            return await _dbContext.Products.ToListAsync();
         }
 
-        public async Task<Product> GetProductDetails(int productId)
+        public async Task AddOrUpdateAsync(Product product)
         {
-            return await _dbContext.Products.FindAsync(productId);
+            if (product.ProductId == 0)
+            {
+                await _dbContext.Products.AddAsync(product);
+            }
+            else
+            {
+                _dbContext.Products.Update(product);
+            }
+            await _dbContext.SaveChangesAsync();
+        }
+
+        public async Task<Product> GetByIdAsync(int id)
+        {
+            return await _dbContext.Products.FindAsync(id);
         }
     }
+
+   
 }

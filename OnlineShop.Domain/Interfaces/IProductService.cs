@@ -6,7 +6,11 @@ namespace OnlineShop.Domain.Interfaces
 {
     public interface IProductService
     {
-        Task<int> AddOrUpdateProduct(Product product);
-        Task<Product> GetProductDetails(int productId);
+
+        Task<IEnumerable<Product>> GetAllProductsAsync();
+
+        Task<Product> GetProductByIdAsync(int productId);
+
+        Task AddOrUpdateProductAsync(Product product);
     }
 }

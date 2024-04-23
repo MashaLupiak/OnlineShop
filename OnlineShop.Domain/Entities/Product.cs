@@ -10,5 +10,4 @@ public partial class Product
     public string? Description { get; set; }
     public decimal Price { get; set; }
     public int Quantity { get; set; }
-    public ICollection<CartItem> CartItems { get; set; } = new List<CartItem>();
 }
