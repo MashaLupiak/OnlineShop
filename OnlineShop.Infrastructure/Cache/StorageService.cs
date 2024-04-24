@@ -65,7 +65,13 @@ namespace OnlineShop.Infrastructure.Cache
 
             return cartItems;
         }
+
+        public async Task BuyProductsFromCartAsync(int userId)
+        {
+            var cartKey = _getCartKey(userId);
+            await _cacheClient.RemoveKeyAsync(cartKey); 
+        }
     }
-    
+
 }
 

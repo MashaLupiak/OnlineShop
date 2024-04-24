@@ -39,6 +39,11 @@ namespace OnlineShop.Infrastructure.Cache
             return result.Select(entry => new KeyValuePair<string, string>(entry.Name.ToString(), entry.Value.ToString()));
         }
 
+        public async Task RemoveKeyAsync(string key)
+        {
+            await _database.KeyDeleteAsync(key);
+        }
+
         public async Task ExpireKeyAsync(string key, TimeSpan expiration)
         {
             await _database.KeyExpireAsync(key, expiration);

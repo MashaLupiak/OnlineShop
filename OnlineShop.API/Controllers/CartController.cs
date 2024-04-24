@@ -58,5 +58,12 @@ namespace OnlineShop.API.Controllers
             }
             return Ok(cartItems);
         }
+
+        [HttpDelete("{cartId}/checkout")]
+        public async Task<IActionResult> BuyProductsFromCart(int cartId)
+        {
+            await _storageService.BuyProductsFromCartAsync(cartId);
+            return Ok(new { message = "Products purchased successfully." });
+        }
     }
 }
