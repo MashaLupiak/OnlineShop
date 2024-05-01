@@ -17,6 +17,7 @@ public partial class OnlineShopDbContext : DbContext
     }
 
     public virtual DbSet<Product> Products { get; set; }
+    public DbSet<PurchasedProduct> PurchasedProducts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

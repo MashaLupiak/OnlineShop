@@ -27,6 +27,7 @@ builder.Services.AddScoped<IProductRepository, ProductRepository>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<ICacheClient, RedisClient>();
 builder.Services.AddScoped<IStorageService, StorageService>();
+builder.Services.AddScoped<IPurchasedProductRepository, PurchasedProductRepository>();
 
 builder.Services.AddControllers();
 
