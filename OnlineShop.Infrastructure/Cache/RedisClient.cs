@@ -18,14 +18,29 @@ namespace OnlineShop.Infrastructure.Cache
             _database = redis.GetDatabase();
         }
 
-        public async Task SetHashAsync(string key, string field, string value)
+        public async Task SetHashAsync<T>(string key, string field, T value)
         {
-            await _database.HashSetAsync(key, field, value);
+            // serialization
+            var serializedValue = JsonSerializer.Serialize(value);
+            await _database.HashSetAsync(key, field, serializedValue);
         }
 
-        public async Task<string> GetHashAsync(string key, string field)
+        public async Task<T> GetHashAsync<T>(string key, string field)
         {
-            return await _database.HashGetAsync(key, field);
+            var response = await _database.HashGetAsync(key, field);
+            if (response.HasValue)
+            {
+                // deserialization
+                var deserializedValue = JsonSerializer.Deserialize<T>(response);
+                return deserializedValue;
+            }
+            else
+            {
+                // 1 - throw Ex
+                // 2 - return default
+                //throw new KeyNotFoundException($"Key '{key}' with field '{field}' not found.");
+                return default(T);
+            }
         }
 
         public async Task RemoveHashAsync(string key, string field)

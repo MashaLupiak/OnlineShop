@@ -60,10 +60,16 @@ namespace OnlineShop.API.Controllers
         }
 
         [HttpDelete("{cartId}/checkout")]
-        public async Task<IActionResult> BuyProductsFromCart(int cartId)
+        public async Task<IActionResult> BuyProductsFromCart(int userId)
         {
-            await _storageService.BuyProductsFromCartAsync(cartId);
-            return Ok(new { message = "Products purchased successfully." });
+            await _storageService.BuyProductsFromCartAsync(userId);
+            // add 404 handling
+            var cartItems = await _storageService.GetCartAsync(userId);
+            if (cartItems == null || !cartItems.Any())
+            {
+                return NotFound(new { error = "Cart not found." });
+            }
+            return Ok();
         }
     }
 }

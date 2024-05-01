@@ -12,32 +12,28 @@ namespace OnlineShop.Infrastructure.Cache
     public class StorageService : IStorageService
     {
         private readonly ICacheClient _cacheClient;
-        private readonly Func<int, string> _getCartKey;
-        private readonly Func<int, string> _getCartItemKey;
         public StorageService(ICacheClient cacheClient)
         {
             _cacheClient = cacheClient;
-            _getCartKey = userId => $"cart:{userId}";
-            _getCartItemKey = productId => $"{productId}";
         }
+
+        public string GetCartKey(int userId) => $"cart:{userId}";
+        public string GetCartItemKey(int productId) => $"{productId}";
 
         public async Task AddToCartAsync(int userId, CartItem cartItem)
         {
-            var cartKey = _getCartKey(userId);
-            var cartItemKey = _getCartItemKey(cartItem.ProductId);
+            var cartKey = GetCartKey(userId);
+            var cartItemKey = GetCartItemKey(cartItem.ProductId);
 
-            var existingCartItemJson = await _cacheClient.GetHashAsync(cartKey, cartItemKey);
-            if (!string.IsNullOrEmpty(existingCartItemJson))
+            var existingCartItem = await _cacheClient.GetHashAsync<CartItem>(cartKey, cartItemKey);
+            if (existingCartItem != null)
             {
-                var existingCartItem = JsonSerializer.Deserialize<CartItem>(existingCartItemJson);
                 existingCartItem.Quantity += cartItem.Quantity;
-                var updatedCartItemJson = JsonSerializer.Serialize(existingCartItem);
-                await _cacheClient.SetHashAsync(cartKey, cartItemKey, updatedCartItemJson);
+                await _cacheClient.SetHashAsync(cartKey, cartItemKey, existingCartItem);
             }
             else
             {
-                var cartItemJson = JsonSerializer.Serialize(cartItem);
-                await _cacheClient.SetHashAsync(cartKey, cartItemKey, cartItemJson);
+                await _cacheClient.SetHashAsync(cartKey, cartItemKey, cartItem);
             }
 
             await _cacheClient.ExpireKeyAsync(cartKey, TimeSpan.FromDays(1));
@@ -45,13 +41,13 @@ namespace OnlineShop.Infrastructure.Cache
 
         public async Task RemoveFromCartAsync(int userId, int productId)
         {
-            var cartKey = _getCartKey(userId);
+            var cartKey = GetCartKey(userId);
             await _cacheClient.RemoveHashAsync(cartKey, productId.ToString());
         }
 
         public async Task<IEnumerable<CartItem>> GetCartAsync(int userId)
         {
-            var cartKey = _getCartKey(userId);
+            var cartKey = GetCartKey(userId);
             var cartItemsHash = await _cacheClient.GetAllHashAsync(cartKey);
 
             var cartItems = cartItemsHash
@@ -68,8 +64,11 @@ namespace OnlineShop.Infrastructure.Cache
 
         public async Task BuyProductsFromCartAsync(int userId)
         {
-            var cartKey = _getCartKey(userId);
-            await _cacheClient.RemoveKeyAsync(cartKey); 
+            var cartKey = GetCartKey(userId);
+            await _cacheClient.RemoveKeyAsync(cartKey);
+            // purchased products should be stored in SQL
+            // table((id), userId, productId, quantity, timestamp)
+            // timestamp should be saved directly in SQL (consider triger if there are no default)
         }
     }
 
