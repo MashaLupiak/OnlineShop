@@ -28,6 +28,10 @@ public partial class OnlineShopDbContext : DbContext
             entity.Property(e => e.Name).HasMaxLength(255);
             entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
         });
+
+        modelBuilder.Entity<PurchasedProduct>()
+            .Property(p => p.Timestamp)
+            .HasDefaultValueSql("GETUTCDATE()");
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
