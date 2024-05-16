@@ -8,20 +8,25 @@ namespace OnlineShop.Application.Services
     public class ProductService : IProductService
     {
         private readonly IProductRepository _productRepository;
+       
         public ProductService(IProductRepository productRepository)
         {
             _productRepository = productRepository;
         }
 
-        public async Task<int> AddOrUpdateProduct(Product product)
+       public async Task<IEnumerable<Product>> GetAllProductsAsync()
         {
-            return await _productRepository.AddOrUpdateProduct(product);
+            return await _productRepository.GetAllAsync();
         }
 
-        public async Task<Product> GetProductDetails(int productId)
+        public async Task<Product> GetProductByIdAsync(int productId)
         {
-            return await _productRepository.GetProductDetails(productId);
+            return await _productRepository.GetByIdAsync(productId);
         }
 
+        public async Task AddOrUpdateProductAsync(Product product)
+        {
+            await _productRepository.AddOrUpdateAsync(product);
+        }
     }
 }

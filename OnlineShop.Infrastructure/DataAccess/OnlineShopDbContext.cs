@@ -17,6 +17,7 @@ public partial class OnlineShopDbContext : DbContext
     }
 
     public virtual DbSet<Product> Products { get; set; }
+    public DbSet<PurchasedProduct> PurchasedProducts { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -28,7 +29,9 @@ public partial class OnlineShopDbContext : DbContext
             entity.Property(e => e.Price).HasColumnType("decimal(10, 2)");
         });
 
-        OnModelCreatingPartial(modelBuilder);
+        modelBuilder.Entity<PurchasedProduct>()
+            .Property(p => p.Timestamp)
+            .HasDefaultValueSql("GETDATE()");
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

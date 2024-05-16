@@ -1,12 +1,15 @@
-﻿using System;
-using OnlineShop.Domain.Entities;
-using System.Threading.Tasks;
+﻿using OnlineShop.Domain.Entities;
+
 
 namespace OnlineShop.Domain.Interfaces
 {
     public interface IProductService
     {
-        Task<int> AddOrUpdateProduct(Product product);
-        Task<Product> GetProductDetails(int productId);
+
+        Task<IEnumerable<Product>> GetAllProductsAsync();
+
+        Task<Product> GetProductByIdAsync(int productId);
+
+        Task AddOrUpdateProductAsync(Product product);
     }
 }
