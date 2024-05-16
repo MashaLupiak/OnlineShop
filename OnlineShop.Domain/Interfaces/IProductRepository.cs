@@ -1,6 +1,4 @@
-﻿using System;
-using OnlineShop.Domain.Entities;
-using System.Threading.Tasks;
+﻿using OnlineShop.Domain.Entities;
 
 namespace OnlineShop.Domain.Interfaces
 {

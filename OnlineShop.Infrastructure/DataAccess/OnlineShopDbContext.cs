@@ -31,7 +31,7 @@ public partial class OnlineShopDbContext : DbContext
 
         modelBuilder.Entity<PurchasedProduct>()
             .Property(p => p.Timestamp)
-            .HasDefaultValueSql("GETUTCDATE()");
+            .HasDefaultValueSql("GETDATE()");
     }
 
     partial void OnModelCreatingPartial(ModelBuilder modelBuilder);

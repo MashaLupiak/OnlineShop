@@ -9,10 +9,18 @@ using StackExchange.Redis;
 using OnlineShop.Infrastructure.Cache;
 using Newtonsoft.Json.Linq;
 using OnlineShop.Domain.Entities;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+var logger = new LoggerConfiguration()
+  .ReadFrom.Configuration(builder.Configuration)
+  .Enrich.FromLogContext()
+  .CreateLogger();
+
+builder.Logging.ClearProviders();
+builder.Logging.AddSerilog(logger);
 
 builder.Services.AddDbContext<OnlineShopDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("OnlineShopDb")));

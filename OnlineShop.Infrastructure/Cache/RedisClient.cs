@@ -20,7 +20,6 @@ namespace OnlineShop.Infrastructure.Cache
 
         public async Task SetHashAsync<T>(string key, string field, T value)
         {
-            // serialization
             var serializedValue = JsonSerializer.Serialize(value);
             await _database.HashSetAsync(key, field, serializedValue);
         }
@@ -30,15 +29,11 @@ namespace OnlineShop.Infrastructure.Cache
             var response = await _database.HashGetAsync(key, field);
             if (response.HasValue)
             {
-                // deserialization
                 var deserializedValue = JsonSerializer.Deserialize<T>(response);
                 return deserializedValue;
             }
             else
             {
-                // 1 - throw Ex
-                // 2 - return default
-                //throw new KeyNotFoundException($"Key '{key}' with field '{field}' not found.");
                 return default(T);
             }
         }

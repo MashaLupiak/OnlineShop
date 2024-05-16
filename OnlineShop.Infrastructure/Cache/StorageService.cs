@@ -1,4 +1,5 @@
-﻿using OnlineShop.Domain.Entities;
+﻿using Microsoft.Extensions.Logging;
+using OnlineShop.Domain.Entities;
 using OnlineShop.Domain.Interfaces;
 using OnlineShop.Infrastructure.Repositories;
 using System;
@@ -15,13 +16,15 @@ namespace OnlineShop.Infrastructure.Cache
         private readonly ICacheClient _cacheClient;
         private readonly IProductRepository _productRepository;
         private readonly IPurchasedProductRepository _purchasedProductRepository;
+        private readonly ILogger<StorageService> _logger;
 
 
-        public StorageService(ICacheClient cacheClient, IProductRepository productRepository, IPurchasedProductRepository purchasedProductRepository)
+        public StorageService(ICacheClient cacheClient, IProductRepository productRepository, IPurchasedProductRepository purchasedProductRepository, ILogger<StorageService> logger)
         {
             _cacheClient = cacheClient;
             _productRepository = productRepository;
             _purchasedProductRepository = purchasedProductRepository;
+            _logger = logger;
         }
 
         public string GetCartKey(int userId) => $"cart:{userId}";
@@ -37,13 +40,16 @@ namespace OnlineShop.Infrastructure.Cache
             {
                 existingCartItem.Quantity += cartItem.Quantity;
                 await _cacheClient.SetHashAsync(cartKey, cartItemKey, existingCartItem);
+                _logger.LogDebug("Updated quantity in cart. UserId: {UserId}, ProductId: {ProductId}, Quantity: {Quantity}.", userId, cartItem.ProductId, existingCartItem.Quantity);
             }
             else
             {
                 await _cacheClient.SetHashAsync(cartKey, cartItemKey, cartItem);
+                _logger.LogDebug("Added product to cart. UserId: {UserId}, ProductId: {ProductId}, Quantity: {Quantity}.", userId, cartItem.ProductId, cartItem.Quantity);
             }
 
             await _cacheClient.ExpireKeyAsync(cartKey, TimeSpan.FromDays(1));
+            _logger.LogDebug("Added product to cart for user {UserId}. ProductId: {ProductId}, Quantity: {Quantity}.", userId, cartItem.ProductId, cartItem.Quantity);
         }
 
         public async Task RemoveFromCartAsync(int userId, int productId)
@@ -72,10 +78,6 @@ namespace OnlineShop.Infrastructure.Cache
         public async Task BuyProductsFromCartAsync(int userId)
         {
             var cartKey = GetCartKey(userId);
-
-            // purchased products should be stored in SQL
-            // table((id), userId, productId, quantity, timestamp)
-            // timestamp should be saved directly in SQL (consider triger if there are no default)
             var cartItems = await GetCartAsync(userId);
             foreach (var cartItem in cartItems)
             {
